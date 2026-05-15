@@ -1,5 +1,6 @@
 package service.troubleticket.config.controlleradvice;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -19,21 +20,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TroubleTicketException.class)
     public ResponseEntity<ErrorResponse> handleTroubleTicket400Exception(
             TroubleTicketException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getCode(), ERROR_DESC_400, generateRequestId());
+        ErrorResponse errorResponse = new ErrorResponse("VALIDATION_ERROR", ERROR_DESC_400, generateRequestId());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument400Exception(
             MethodArgumentNotValidException ex) {
-        ErrorResponse errorResponse = new ErrorResponse("VALIDATION_ERROR", ERROR_DESC_400, generateRequestId());
+        String defaultMessage = ex.getBindingResult().getFieldError() != null ? ex.getBindingResult().getFieldError().getDefaultMessage() : ERROR_DESC_400;
+        ErrorResponse errorResponse = new ErrorResponse("VALIDATION_ERROR", defaultMessage, generateRequestId());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(TroubleTicketNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleTroubleTicketNotFound404Exception(
             TroubleTicketNotFoundException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getCode(), ERROR_DESC_TICKET404, generateRequestId());
+        ErrorResponse errorResponse = new ErrorResponse("TROUBLE_TICKET_NOT_FOUND", ERROR_DESC_TICKET404, generateRequestId());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 

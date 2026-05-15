@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class NoteCreateRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @NotBlank
+    @NotBlank(message = "Pole text ma niedozwoloną wartość dla tej operacji.")
     private String text;
 }

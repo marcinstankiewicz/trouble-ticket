@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import service.troubleticket.persistence.repository.TroubleTicketRepository;
 
 import static service.troubleticket.common.ServiceErrors.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TroubleTicketService {
@@ -39,6 +41,7 @@ public class TroubleTicketService {
         String uniqueKey = generateUniqueKey(tenantId, request.getExternalId());
         Optional<TroubleTicketEntity> existingTicket = troubleTicketRepository.findByUniqueKey(uniqueKey);
         if (existingTicket.isPresent()) {
+            log.info("createTroubleTicket::Trouble ticket already exists for tenantId={} and externalId={}", tenantId, request.getExternalId());
             return mapToTroubleTicketExistingResponse(existingTicket.get());
         }
         

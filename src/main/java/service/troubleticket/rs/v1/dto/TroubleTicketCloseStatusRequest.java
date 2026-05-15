@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class TroubleTicketCloseStatusRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @NotNull
+    @NotNull(message = "Pole status ma niedozwoloną wartość dla tej operacji.")
     private String status;
 }
