@@ -2,6 +2,7 @@ package service.troubleticket.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,7 @@ public class TroubleTicketService {
         }
         
         String uniqueKey = generateUniqueKey(tenantId, request.getExternalId());
-        var existingTicket = troubleTicketRepository.findByUniqueKey(uniqueKey);
+        Optional<TroubleTicketEntity> existingTicket = troubleTicketRepository.findByUniqueKey(uniqueKey);
         if (existingTicket.isPresent()) {
             return mapToResponse(existingTicket.get());
         }
@@ -77,9 +78,8 @@ public class TroubleTicketService {
     }
 
     public TroubleTicketResponse getTroubleTicketById(String tenantId, String ticketId) {
-        var ticket = troubleTicketRepository.findByTenantIdAndTicketId(tenantId, ticketId)
+        TroubleTicketEntity ticket = troubleTicketRepository.findByTenantIdAndTicketId(tenantId, ticketId)
             .orElseThrow(() -> new TroubleTicketNotFoundException(TROUBLE_TICKET_NOT_FOUND, TROUBLE_TICKET_NOT_FOUND_DESC));
-        
         return mapToResponse(ticket);
     }
 
@@ -90,7 +90,7 @@ public class TroubleTicketService {
                 "Only 'closed' status is allowed in this operation.");
         }
         
-        var ticket = troubleTicketRepository.findByTenantIdAndTicketId(tenantId, ticketId)
+        TroubleTicketEntity ticket = troubleTicketRepository.findByTenantIdAndTicketId(tenantId, ticketId)
             .orElseThrow(() -> new TroubleTicketNotFoundException(TROUBLE_TICKET_NOT_FOUND, TROUBLE_TICKET_NOT_FOUND_DESC));
         ticket.setStatus("closed");
         ticket.setUpdatedAt(LocalDateTime.now());
@@ -99,7 +99,7 @@ public class TroubleTicketService {
     }
 
     public NoteResponse addTroubleTicketNote(String tenantId, String ticketId, NoteCreateRequest request) {
-        var ticket = troubleTicketRepository.findByTenantIdAndTicketId(tenantId, ticketId)
+        TroubleTicketEntity ticket = troubleTicketRepository.findByTenantIdAndTicketId(tenantId, ticketId)
             .orElseThrow(() -> new TroubleTicketNotFoundException(TROUBLE_TICKET_NOT_FOUND, TROUBLE_TICKET_NOT_FOUND_DESC));
         NoteEntity noteEntity = NoteEntity.builder()
             .noteId(generateNoteId())
