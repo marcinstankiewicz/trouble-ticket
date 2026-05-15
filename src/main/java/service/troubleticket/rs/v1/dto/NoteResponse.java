@@ -1,4 +1,4 @@
-package service.troubleticket.controller.dto;
+package service.troubleticket.rs.v1.dto;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
