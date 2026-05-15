@@ -13,143 +13,130 @@ Minimalny, design-first profil TMF621 Trouble Ticket API z dodatkowymi funkcjona
 - Obsługa tenant scope poprzez JWT Bearer tokens
 - Idempotencja operacji tworzenia
 
-## Szybki start
+## Główne endpointy
 
-### Wymagania
+- **POST /api/v1/troubleTicket** - Utwórz nowe zgłoszenie
+    - Status request musi być "new"
+    - Zwraca 201 dla nowego, 200 dla istniejącego (idempotencja)
+    - Nowy ticket automatycznie zmienia status na "acknowledged"
 
-- Java 21+
-- Maven 3.8+
+- **GET /api/v1/troubleTicket** - Listuj zgłoszenia
+    - Zwraca listę podsumowań dla tenant scope użytkownika
+    - Bez paginacji w v1
 
-### Build
+- **GET /api/v1/troubleTicket/{id}** - Pobierz szczegóły zgłoszenia
+    - Zwraca pełną reprezentację z notatkami
 
-```bash
-cd trouble-ticket
-mvn clean package
+- **PATCH /api/v1/troubleTicket/{id}** - Zamknij zgłoszenie
+    - Zmienia status wyłącznie na "closed"
+    - Inne statusy są odrzucane z 400
+
+- **POST /api/v1/troubleTicket/{id}/note** - Dodaj notatkę
+    - Tworzy subresource notatki do zgłoszenia
+
+
+## 🔒 Bezpieczeństwo
+
+### Implementacja JWT
+- **Filter**: `JwtTokenFilter` - extracts Bearer token from Authorization header
+- **Provider**: `JwtTokenProvider` - validates JWT and extracts tenant ID
+- **Algorytm**: HS256 (HMAC with SHA-256)
+- **Secret**: Konfigurowalny via `jwt.secret` property
+
+### Spring Security Configuration
+```
+- Stateless session management (JWT-based)
+- CSRF disabled (API-only)
+- CORS disabled (customize as needed)
+- JWT filter added before Username/Password filter
+- All /api/** endpoints require authentication
 ```
 
-### Run
+## 📋 Specyfikacja API
+
+### Request/Response Format
+- **Content-Type**: application/json
+- **Encoding**: UTF-8
+- **Date Format**: ISO 8601 (YYYY-MM-DDTHH:mm:ssZ)
+
+### Status Codes
+| Status | Endpoint | Scenariusz |
+|--------|----------|-----------|
+| 201 | POST Create | Nowe zgłoszenie |
+| 200 | POST Create / GET / PATCH | Istniejące lub operacja ok |
+| 400 | Any | Błąd walidacji |
+| 401 | Any | Brak/nieprawidłowy token |
+| 403 | Any | Użytkownik bez uprawnień |
+| 404 | GET / PATCH | Zasób nie znaleziony |
+| 500 | Any | Wewnętrzny błąd serwera |
+
+### Specjalne koncepty
+
+#### 1. Idempotencja (Create)
+```
+Klucz unikatowości: (tenantId, externalId)
+- Jeśli istnieje: zwraca 200 z istniejącą reprezentacją
+- Jeśli nowe: zwraca 201 z nową reprezentacją
+```
+
+#### 2. Tenant Scope
+```
+Wynika wyłącznie z JWT token claim 'sub'
+- Użytkownik widzi tylko resources w jego tenant scope
+- Bezpieczna izolacja multi-tenant
+```
+
+#### 3. Status Mapping
+```
+Request: "new" → Database: "acknowledged"
+(Symuluje auto-przetwarzanie po stronie systemu)
+```
+
+#### 4. Notatki
+```
+- Pierwsza notatka tworzona wraz z ticketem
+- Dodatkowe notatki dodawane przez oddzielny endpoint
+- Wszystkie notatki zwracane w response ticketu
+```
+
+## 🚀 Run
 
 ```bash
-java -jar target/troubleticket-0.0.1-SNAPSHOT.jar
+mvn spring-boot:run
 ```
 
 Aplikacja będzie dostępna na `http://localhost:8080`
 
-## API Documentation
+## 🐳 Docker
 
-Pełna dokumentacja API znajduje się w pliku: **[IMPLEMENTATION.md](./IMPLEMENTATION.md)**
+```bash
+# Build image
+docker build -t trouble-ticket-api:latest .
 
-### Główne endpointy
+# Run with compose
+docker-compose up -d
 
-```
-POST   /api/v1/troubleTicket              # Utwórz zgłoszenie
-GET    /api/v1/troubleTicket              # Listuj zgłoszenia
-GET    /api/v1/troubleTicket/{id}         # Pobierz szczegóły
-PATCH  /api/v1/troubleTicket/{id}         # Zamknij zgłoszenie
-POST   /api/v1/troubleTicket/{id}/note    # Dodaj notatkę
-```
-
-## Struktura projektu
-
-```
-src/main/java/service/troubleticket/
-├── TroubleticketApplication.java    # Entry point
-├── controller/                       # REST Controllers
-├── service/                         # Business logic
-├── entity/                          # JPA Entities
-├── dto/                            # Data Transfer Objects
-├── repository/                      # Data access layer
-├── security/                        # JWT authentication
-├── exception/                       # Exception handling
-└── config/                         # Spring configuration
+# View logs
+docker-compose logs -f trouble-ticket-app
 ```
 
-## Konfiguracja
+## 🧪 Testing
 
-Edytuj `src/main/resources/application.properties`:
+### Postman Collection
+Gotowa kolekcja: `Trouble_Ticket_API.postman_collection.json`
+Zmienne:
+- `baseUrl`: http://localhost:8080
+- `jwt_token`: Wygeneruj via jwt.io
+- `ticket_id`: Otrzymaj z response create
 
-```properties
-# Server
-server.port=8080
-
-# JWT
-jwt.secret=your-secret-key
-jwt.expiration=86400000
-
-# Database
-spring.datasource.url=jdbc:h2:mem:testdb
+### Przykład JWT Token (Development)
 ```
-
-## Technologia
-
-- **Framework**: Spring Boot 4.0.6
-- **Security**: Spring Security + JWT (JJWT)
-- **Database**: H2 (development) / MySQL/PostgreSQL (production)
-- **ORM**: Spring Data JPA
-- **Java**: 21
-- **Build**: Maven
-
-## Functional Features
-
-✅ Create Trouble Ticket (POST)
-- Idempotent operation based on (tenantId, externalId)
-- Only "new" status accepted in request
-- Auto-transitions to "acknowledged" status
-- Creates initial note
-
-✅ List Trouble Tickets (GET)
-- Returns summary for authenticated tenant scope
-- Ordered by creation date (descending)
-
-✅ Get Trouble Ticket Details (GET)
-- Full representation with all notes
-- 404 if not found or not in tenant scope
-
-✅ Close Trouble Ticket (PATCH)
-- Only "closed" status transition allowed
-- Returns 400 for invalid status changes
-
-✅ Add Note (POST)
-- Creates sub-resource for ticket
-- Associates with authenticated tenant scope
-
-## Security
-
-- JWT Bearer token authentication required
-- Tenant scope from token's 'sub' claim
-- Stateless session management
-- CSRF disabled (API-only)
-
-## Testing
-
-See **[IMPLEMENTATION.md](./IMPLEMENTATION.md)** for curl examples and JWT token generation.
-
-## Development
-
-H2 Console available at: `http://localhost:8080/h2-console`
-
-Default credentials:
-- JDBC URL: `jdbc:h2:mem:testdb`
-- Username: `sa`
-- Password: (empty)
-
-## Production Deployment
-
-1. Update `jwt.secret` to a strong random key
-2. Switch database to MySQL/PostgreSQL
-3. Set appropriate logging levels
-4. Enable HTTPS/SSL
-5. Configure environment variables for secrets
-6. Add monitoring (Spring Boot Actuator)
-7. Consider API documentation (springdoc-openapi)
-
-## Files
-
-- `pom.xml` - Maven dependencies
-- `IMPLEMENTATION.md` - Full implementation details
-- `src/main/devtask/trouble-ticket-api.yaml` - OpenAPI specification
-
-## License
-
-Implementacja profilu TMF621 Trouble Ticket API
-
+Secret: your-super-secret-key-for-jwt-signing-do-not-use-in-production
+Payload:
+{
+  "sub": "tenant-id-here",
+  "iat": 1715767620,
+  "exp": 1715854020
+}
+Algorytm: HS256
+```
