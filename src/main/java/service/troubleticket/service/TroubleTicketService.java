@@ -24,6 +24,8 @@ import service.troubleticket.service.exception.TroubleTicketNotFoundException;
 import service.troubleticket.persistence.repository.NoteRepository;
 import service.troubleticket.persistence.repository.TroubleTicketRepository;
 
+import static service.troubleticket.common.ServiceErrors.*;
+
 @Service
 @RequiredArgsConstructor
 public class TroubleTicketService {
@@ -32,10 +34,6 @@ public class TroubleTicketService {
     
     private static final String TICKET_ID_PREFIX = "TT-";
     private static final String NOTE_ID_PREFIX = "NOTE-";
-    private static final String WRONG_NEW_STATUS_DESC = "Jedynie status 'new' jest dozwolony dla tej operacji.";
-    private static final String WRONG_CLOSED_STATUS_DESC = "Jedynie status 'closed' jest dozwolony dla tej operacji.";
-    private static final String TROUBLE_TICKET_NOT_FOUND = "TROUBLE_TICKET_NOT_FOUND";
-    private static final String TROUBLE_TICKET_NOT_FOUND_DESC = "Zgłoszenie nie istnieje albo nie jest widoczne w tenant scope użytkownika";
 
     @Transactional
     public TroubleTicketResponse createTroubleTicket(String tenantId, TroubleTicketCreateRequest request) {

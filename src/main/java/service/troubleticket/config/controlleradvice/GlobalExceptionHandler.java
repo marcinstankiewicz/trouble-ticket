@@ -12,14 +12,10 @@ import service.troubleticket.rs.v1.dto.ErrorResponse;
 import service.troubleticket.service.exception.TroubleTicketException;
 import service.troubleticket.service.exception.TroubleTicketNotFoundException;
 
+import static service.troubleticket.common.ExceptionErrors.*;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    final String ERROR_DESC_400 = "Żądanie jest niepoprawne lub wykracza poza dozwolony kontrakt v1.";
-    final String ERROR_DESC_401 = "Brak uwierzytelnienia albo niepoprawny token.";
-    final String ERROR_DESC_403 = "Użytkownik jest uwierzytelniony, ale nie ma wymaganych uprawnień do wykonania operacji.";
-    final String ERROR_DESC_SERVICE404 = "Wskazana usługa nie istnieje, nie jest aktywna albo nie należy do tenant scope użytkownika.";
-    final String ERROR_DESC_TICKET404 = "Zgłoszenie nie istnieje albo nie jest widoczne w tenant scope użytkownika.";
-
     @ExceptionHandler(TroubleTicketException.class)
     public ResponseEntity<ErrorResponse> handleTroubleTicket400Exception(
             TroubleTicketException ex) {
