@@ -140,3 +140,11 @@ Payload:
 }
 Algorytm: HS256
 ```
+
+TOP SECRET!
+```
+Docker 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.6NvwUYZqfAm2e1TAY94WwLG2DodkLKKuW55ynPrzL_o
+Maven 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.gRZXVk0MRb1S-2ESxLefw-3LsPiaXffg6Cr9VLebh-M
+```
