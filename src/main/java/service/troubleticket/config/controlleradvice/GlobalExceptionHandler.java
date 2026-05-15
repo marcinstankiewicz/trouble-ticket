@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -23,18 +23,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument400Exception(
-            IllegalArgumentException ex) {
+            MethodArgumentNotValidException ex) {
         ErrorResponse errorResponse = new ErrorResponse("VALIDATION_ERROR", ERROR_DESC_400, generateRequestId());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
-
-    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleAuthenticationCredentialsNotFound401Exception(
-            AuthenticationCredentialsNotFoundException ex) {
-        ErrorResponse errorResponse = new ErrorResponse("UNAUTHORIZED", ERROR_DESC_401, generateRequestId());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
     @ExceptionHandler(TroubleTicketNotFoundException.class)

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +66,7 @@ public class TroubleTicketController {
             @ApiResponse(responseCode = "404", description = "Service Not Found")
     })
     public ResponseEntity<TroubleTicketResponse> createTroubleTicket(
-            @RequestBody TroubleTicketCreateRequest request,
+            @Valid @RequestBody TroubleTicketCreateRequest request,
             Authentication authentication) {
         
         String tenantId = getTenantIdFromAuthentication(authentication);
@@ -176,7 +177,7 @@ public class TroubleTicketController {
     })
     public ResponseEntity<TroubleTicketClosedResponse> closeTroubleTicket(
             @PathVariable("id") String ticketId,
-            @RequestBody TroubleTicketCloseStatusRequest request,
+            @Valid @RequestBody TroubleTicketCloseStatusRequest request,
             Authentication authentication) {
         
         String tenantId = getTenantIdFromAuthentication(authentication);
@@ -211,7 +212,7 @@ public class TroubleTicketController {
     })
     public ResponseEntity<NoteResponse> addTroubleTicketNote(
             @PathVariable("id") String ticketId,
-            @RequestBody NoteCreateRequest request,
+            @Valid @RequestBody NoteCreateRequest request,
             Authentication authentication) {
         
         String tenantId = getTenantIdFromAuthentication(authentication);
