@@ -22,12 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import service.troubleticket.rs.v1.dto.NoteCreateRequest;
-import service.troubleticket.rs.v1.dto.NoteResponse;
-import service.troubleticket.rs.v1.dto.TroubleTicketCloseStatusRequest;
-import service.troubleticket.rs.v1.dto.TroubleTicketCreateRequest;
-import service.troubleticket.rs.v1.dto.TroubleTicketResponse;
-import service.troubleticket.rs.v1.dto.TroubleTicketSummary;
+import service.troubleticket.rs.v1.dto.*;
 import service.troubleticket.service.TroubleTicketService;
 
 @RestController
@@ -54,8 +49,16 @@ public class TroubleTicketController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Zgłoszenie utworzone."),
-            @ApiResponse(responseCode = "200", description = "Zwrócono istniejące zgłoszenie na podstawie idempotencji `(tenantId, externalId)`."),
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Zgłoszenie utworzone.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TroubleTicketCreatedResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Zwrócono istniejące zgłoszenie na podstawie idempotencji `(tenantId, externalId)`.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TroubleTicketExistingResponse.class))
+            ),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
@@ -68,9 +71,15 @@ public class TroubleTicketController {
         String tenantId = getTenantIdFromAuthentication(authentication);
         TroubleTicketResponse response = troubleTicketService.createTroubleTicket(tenantId, request);
         String locationHeader = "/api/v1/troubleTicket/" + response.getId();
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .header(HttpHeaders.LOCATION, locationHeader)
-            .body(response);
+        if (response instanceof TroubleTicketExistingResponse) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .header(HttpHeaders.LOCATION, locationHeader)
+                    .body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .header(HttpHeaders.LOCATION, locationHeader)
+                    .body(response);
+        }
     }
 
     @GetMapping
@@ -158,20 +167,20 @@ public class TroubleTicketController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Zgłoszenie zostało zamknięte.",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TroubleTicketResponse.class))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TroubleTicketClosedResponse.class))
             ),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404", description = "Trouble Ticket not found")
     })
-    public ResponseEntity<TroubleTicketResponse> closeTroubleTicket(
+    public ResponseEntity<TroubleTicketClosedResponse> closeTroubleTicket(
             @PathVariable("id") String ticketId,
             @RequestBody TroubleTicketCloseStatusRequest request,
             Authentication authentication) {
         
         String tenantId = getTenantIdFromAuthentication(authentication);
-        TroubleTicketResponse response = troubleTicketService.closeTroubleTicket(tenantId, ticketId, request);
+        TroubleTicketClosedResponse response = troubleTicketService.closeTroubleTicket(tenantId, ticketId, request);
         return ResponseEntity.ok(response);
     }
 
