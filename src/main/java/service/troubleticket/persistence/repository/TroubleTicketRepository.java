@@ -1,4 +1,4 @@
-package service.troubleticket.repository;
+package service.troubleticket.persistence.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import service.troubleticket.entity.TroubleTicketEntity;
+import service.troubleticket.persistence.entity.TroubleTicketEntity;
 
 @Repository
 public interface TroubleTicketRepository extends JpaRepository<TroubleTicketEntity, Long> {

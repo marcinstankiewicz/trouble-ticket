@@ -1,6 +1,9 @@
-package service.troubleticket.exception;
+package service.troubleticket.service.exception;
+
+import lombok.Getter;
 
 public class TroubleTicketException extends RuntimeException {
+    @Getter
     private final String code;
     private final String message;
     
@@ -9,11 +12,7 @@ public class TroubleTicketException extends RuntimeException {
         this.code = code;
         this.message = message;
     }
-    
-    public String getCode() {
-        return code;
-    }
-    
+
     @Override
     public String getMessage() {
         return message;

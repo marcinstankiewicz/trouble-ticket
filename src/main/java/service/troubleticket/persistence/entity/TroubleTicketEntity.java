@@ -1,4 +1,4 @@
-package service.troubleticket.entity;
+package service.troubleticket.persistence.entity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

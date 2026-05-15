@@ -1,7 +1,6 @@
 package service.troubleticket.controller;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import service.troubleticket.dto.NoteCreateRequest;
-import service.troubleticket.dto.NoteResponse;
-import service.troubleticket.dto.TroubleTicketCloseStatusRequest;
-import service.troubleticket.dto.TroubleTicketCreateRequest;
-import service.troubleticket.dto.TroubleTicketResponse;
-import service.troubleticket.dto.TroubleTicketSummary;
+import service.troubleticket.controller.dto.NoteCreateRequest;
+import service.troubleticket.controller.dto.NoteResponse;
+import service.troubleticket.controller.dto.TroubleTicketCloseStatusRequest;
+import service.troubleticket.controller.dto.TroubleTicketCreateRequest;
+import service.troubleticket.controller.dto.TroubleTicketResponse;
+import service.troubleticket.controller.dto.TroubleTicketSummary;
 import service.troubleticket.service.TroubleTicketService;
 
 @RestController

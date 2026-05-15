@@ -1,4 +1,4 @@
-package service.troubleticket.security;
+package service.troubleticket.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -19,32 +19,22 @@ public class JwtTokenProvider {
     
     @Value("${jwt.expiration:86400000}") // 24h
     private long jwtExpirationInMs;
-    
-    /**
-     * Extracts tenant ID from JWT token.
-     * Tenant ID is expected to be stored in the 'sub' (subject) claim.
-     */
+
     public String getTenantIdFromJWT(String token) {
         SecretKey key = new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8), 0, 
             jwtSecret.getBytes(StandardCharsets.UTF_8).length, "HmacSHA256");
-        
         Claims claims = Jwts.parser()
             .verifyWith(key)
             .build()
             .parseSignedClaims(token)
             .getPayload();
-        
         return claims.getSubject();
     }
-    
-    /**
-     * Validates JWT token.
-     */
+
     public boolean validateToken(String authToken) {
         try {
             SecretKey key = new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8), 0, 
                 jwtSecret.getBytes(StandardCharsets.UTF_8).length, "HmacSHA256");
-            
             Jwts.parser()
                 .verifyWith(key)
                 .build()
