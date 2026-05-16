@@ -1,7 +1,10 @@
 package service.troubleticket.rs.v1.dto;
 
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@NoArgsConstructor
 public class TroubleTicketClosedResponse extends TroubleTicketResponse {
 
     public TroubleTicketClosedResponse(

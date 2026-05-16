@@ -7,7 +7,7 @@ import service.troubleticket.rs.v1.dto.TroubleTicketCreatedResponse;
 import service.troubleticket.rs.v1.dto.TroubleTicketExistingResponse;
 import service.troubleticket.rs.v1.dto.TroubleTicketSummary;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = NoteMapper.class)
 public interface TroubleTicketMapper {
 
     TroubleTicketCreatedResponse mapToTroubleTicketCreatedResponse(TroubleTicketEntity entity);
