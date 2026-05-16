@@ -1,6 +1,5 @@
 package service.troubleticket.config.controlleradvice;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -39,15 +38,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric500Exception(Exception ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-            "INTERNAL_SERVER_ERROR",
-            "Internal server error.",
-            generateRequestId()
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ErrorResponse> handleGeneric500Exception(Exception ex) {
+//        ErrorResponse errorResponse = new ErrorResponse(
+//            "INTERNAL_SERVER_ERROR",
+//            "Internal server error.",
+//            generateRequestId()
+//        );
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+//    }
     
     private String generateRequestId() {
         return "req-" + UUID.randomUUID().toString().substring(0, 8);

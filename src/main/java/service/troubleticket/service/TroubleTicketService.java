@@ -19,6 +19,8 @@ import service.troubleticket.service.exception.TroubleTicketException;
 import service.troubleticket.service.exception.TroubleTicketNotFoundException;
 import service.troubleticket.persistence.repository.NoteRepository;
 import service.troubleticket.persistence.repository.TroubleTicketRepository;
+import service.troubleticket.service.mapper.NoteMapper;
+import service.troubleticket.service.mapper.TroubleTicketMapper;
 
 import static service.troubleticket.common.ServiceErrors.*;
 
@@ -28,7 +30,9 @@ import static service.troubleticket.common.ServiceErrors.*;
 public class TroubleTicketService {
     private final TroubleTicketRepository troubleTicketRepository;
     private final NoteRepository noteRepository;
-    
+    private final TroubleTicketMapper mapper;
+    private final NoteMapper noteMapper;
+
     private static final String TICKET_ID_PREFIX = "TT-";
     private static final String NOTE_ID_PREFIX = "NOTE-";
 
@@ -42,7 +46,7 @@ public class TroubleTicketService {
         Optional<TroubleTicketEntity> existingTicket = troubleTicketRepository.findByUniqueKey(uniqueKey);
         if (existingTicket.isPresent()) {
             log.info("createTroubleTicket::Trouble ticket already exists for tenantId={} and externalId={}", tenantId, request.getExternalId());
-            return mapToTroubleTicketExistingResponse(existingTicket.get());
+            return mapper.mapToTroubleTicketExistingResponse(existingTicket.get());
         }
         
         String ticketId = generateTicketId();
@@ -67,19 +71,19 @@ public class TroubleTicketService {
             .build();
         NoteEntity savedNote = noteRepository.save(noteEntity);
         savedTicket.getNotes().add(savedNote);
-        return mapToTroubleTicketCreatedResponse(savedTicket);
+        return mapper.mapToTroubleTicketCreatedResponse(savedTicket);
     }
 
     public List<TroubleTicketSummary> listTroubleTickets(String tenantId) {
         return troubleTicketRepository.findByTenantId(tenantId).stream()
-            .map(this::mapToSummary)
+            .map(mapper::mapToSummary)
             .collect(Collectors.toList());
     }
 
     public TroubleTicketResponse getTroubleTicketById(String tenantId, String ticketId) {
         TroubleTicketEntity ticket = troubleTicketRepository.findByTenantIdAndTicketId(tenantId, ticketId)
             .orElseThrow(() -> new TroubleTicketNotFoundException(TROUBLE_TICKET_NOT_FOUND, TROUBLE_TICKET_NOT_FOUND_DESC));
-        return mapToTroubleTicketCreatedResponse(ticket);
+        return mapper.mapToTroubleTicketCreatedResponse(ticket);
     }
 
     @Transactional
@@ -94,7 +98,7 @@ public class TroubleTicketService {
         ticket.setStatus(TroubleTicketStatus.CLOSED);
         ticket.setUpdatedAt(LocalDateTime.now());
         TroubleTicketEntity updatedTicket = troubleTicketRepository.save(ticket);
-        return mapToTroubleTicketClosedResponse(updatedTicket);
+        return mapper.mapToTroubleTicketClosedResponse(updatedTicket);
     }
 
     @Transactional
@@ -110,63 +114,7 @@ public class TroubleTicketService {
         NoteEntity savedNote = noteRepository.save(noteEntity);
         ticket.getNotes().add(savedNote);
         troubleTicketRepository.save(ticket);
-        return mapNoteToResponse(savedNote);
-    }
-    
-    private TroubleTicketCreatedResponse mapToTroubleTicketCreatedResponse(TroubleTicketEntity entity) {
-        return new TroubleTicketCreatedResponse(
-            entity.getTicketId(),
-            entity.getExternalId(),
-            entity.getServiceId(),
-            entity.getDescription(),
-            entity.getStatus().getValue(),
-            entity.getNotes().stream()
-                .map(this::mapNoteToResponse)
-                .collect(Collectors.toList())
-        );
-    }
-
-    private TroubleTicketExistingResponse mapToTroubleTicketExistingResponse(TroubleTicketEntity entity) {
-        return new TroubleTicketExistingResponse(
-                entity.getTicketId(),
-                entity.getExternalId(),
-                entity.getServiceId(),
-                entity.getDescription(),
-                entity.getStatus().getValue(),
-                entity.getNotes().stream()
-                        .map(this::mapNoteToResponse)
-                        .collect(Collectors.toList())
-        );
-    }
-
-    private TroubleTicketClosedResponse mapToTroubleTicketClosedResponse(TroubleTicketEntity entity) {
-        return new TroubleTicketClosedResponse(
-                entity.getTicketId(),
-                entity.getExternalId(),
-                entity.getServiceId(),
-                entity.getDescription(),
-                entity.getStatus().getValue(),
-                entity.getNotes().stream()
-                        .map(this::mapNoteToResponse)
-                        .collect(Collectors.toList())
-        );
-    }
-    
-    private TroubleTicketSummary mapToSummary(TroubleTicketEntity entity) {
-        return new TroubleTicketSummary(
-            entity.getExternalId(),
-            entity.getServiceId(),
-            entity.getDescription(),
-            entity.getStatus().getValue()
-        );
-    }
-    
-    private NoteResponse mapNoteToResponse(NoteEntity entity) {
-        return new NoteResponse(
-            entity.getNoteId(),
-            entity.getText(),
-            entity.getCreatedAt()
-        );
+        return noteMapper.mapNoteToResponse(savedNote);
     }
     
     private String generateTicketId() {
