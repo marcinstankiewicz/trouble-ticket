@@ -367,4 +367,3 @@ class TroubleTicketServiceTest {
         verify(mapper, times(2)).mapToSummary(any());
     }
 }
-
