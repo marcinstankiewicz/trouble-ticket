@@ -9,7 +9,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import service.troubleticket.common.ExceptionErrors;
+import service.troubleticket.common.ApiErrorMessages;
 import service.troubleticket.rs.v1.dto.ErrorResponse;
 import service.troubleticket.service.exception.TroubleTicketException;
 import service.troubleticket.service.exception.TroubleTicketNotFoundException;
@@ -17,6 +17,7 @@ import service.troubleticket.service.exception.TroubleTicketNotFoundException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static service.troubleticket.common.ErrorCodes.*;
 
 class GlobalExceptionHandlerTest {
 
@@ -39,8 +40,8 @@ class GlobalExceptionHandlerTest {
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("VALIDATION_ERROR", response.getBody().getCode());
-        assertEquals(ExceptionErrors.ERROR_DESC_400, response.getBody().getMessage());
+        assertEquals(VALIDATION_ERROR, response.getBody().getCode());
+        assertEquals(ApiErrorMessages.ERROR_DESC_400, response.getBody().getMessage());
         assertTrue(response.getBody().getRequestId().startsWith("req-"));
     }
 
@@ -56,8 +57,8 @@ class GlobalExceptionHandlerTest {
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("TROUBLE_TICKET_NOT_FOUND", response.getBody().getCode());
-        assertEquals(ExceptionErrors.ERROR_DESC_TICKET404, response.getBody().getMessage());
+        assertEquals(TROUBLE_TICKET_NOT_FOUND, response.getBody().getCode());
+        assertEquals(ApiErrorMessages.ERROR_DESC_TICKET404, response.getBody().getMessage());
         assertTrue(response.getBody().getRequestId().startsWith("req-"));
     }
 
@@ -78,7 +79,7 @@ class GlobalExceptionHandlerTest {
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("VALIDATION_ERROR", response.getBody().getCode());
+        assertEquals(VALIDATION_ERROR, response.getBody().getCode());
         assertEquals("Pole externalId ma niedozwoloną wartość dla tej operacji.", response.getBody().getMessage());
         assertTrue(response.getBody().getRequestId().startsWith("req-"));
     }
@@ -99,8 +100,8 @@ class GlobalExceptionHandlerTest {
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("VALIDATION_ERROR", response.getBody().getCode());
-        assertEquals(ExceptionErrors.ERROR_DESC_400, response.getBody().getMessage());
+        assertEquals(VALIDATION_ERROR, response.getBody().getCode());
+        assertEquals(ApiErrorMessages.ERROR_DESC_400, response.getBody().getMessage());
         assertTrue(response.getBody().getRequestId().startsWith("req-"));
     }
 }

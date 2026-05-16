@@ -17,8 +17,8 @@ import service.troubleticket.rs.v1.dto.ErrorResponse;
 
 import java.util.UUID;
 
-import static service.troubleticket.common.ExceptionErrors.ERROR_DESC_401;
-import static service.troubleticket.common.ExceptionErrors.ERROR_DESC_403;
+import static service.troubleticket.common.ApiErrorMessages.*;
+import static service.troubleticket.common.ErrorCodes.*;
 
 @Configuration
 @EnableWebSecurity
@@ -48,7 +48,7 @@ public class SecurityConfig {
         return (request, response, authException) -> {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
-            ErrorResponse error = new ErrorResponse("UNAUTHORIZED", ERROR_DESC_401, generateRequestId());
+            ErrorResponse error = new ErrorResponse(UNAUTHORIZED, ERROR_DESC_401, generateRequestId());
             new ObjectMapper().writeValue(response.getOutputStream(), error);
         };
     }
@@ -57,7 +57,7 @@ public class SecurityConfig {
         return (request, response, accessDeniedException) -> {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType("application/json");
-            ErrorResponse error = new ErrorResponse("FORBIDDEN", ERROR_DESC_403, generateRequestId());
+            ErrorResponse error = new ErrorResponse(FORBIDDEN, ERROR_DESC_403, generateRequestId());
             new ObjectMapper().writeValue(response.getOutputStream(), error);
         };
     }

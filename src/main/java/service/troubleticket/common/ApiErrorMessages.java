@@ -3,7 +3,7 @@ package service.troubleticket.common;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class ExceptionErrors {
+public class ApiErrorMessages {
     public static final String ERROR_DESC_400 = "Żądanie jest niepoprawne lub wykracza poza dozwolony kontrakt v1.";
     public static final String ERROR_DESC_401 = "Brak uwierzytelnienia albo niepoprawny token.";
     public static final String ERROR_DESC_403 = "Użytkownik jest uwierzytelniony, ale nie ma wymaganych uprawnień do wykonania operacji.";

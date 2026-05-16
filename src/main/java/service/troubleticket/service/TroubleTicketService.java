@@ -22,7 +22,8 @@ import service.troubleticket.persistence.repository.TroubleTicketRepository;
 import service.troubleticket.service.mapper.NoteMapper;
 import service.troubleticket.service.mapper.TroubleTicketMapper;
 
-import static service.troubleticket.common.ServiceErrors.*;
+import static service.troubleticket.common.ErrorCodes.*;
+import static service.troubleticket.common.TroubleTicketErrorMessages.*;
 
 @Slf4j
 @Service
@@ -39,7 +40,7 @@ public class TroubleTicketService {
     @Transactional
     public TroubleTicketResponse createTroubleTicket(String tenantId, TroubleTicketCreateRequest request) {
         if (!TroubleTicketStatus.NEW.getValue().equals(request.getStatus())) {
-            throw new TroubleTicketException("VALIDATION_ERROR", WRONG_NEW_STATUS_DESC);
+            throw new TroubleTicketException(VALIDATION_ERROR, WRONG_NEW_STATUS_DESC);
         }
         
         String uniqueKey = generateUniqueKey(tenantId, request.getExternalId());
@@ -90,7 +91,7 @@ public class TroubleTicketService {
     public TroubleTicketClosedResponse closeTroubleTicket(String tenantId, String ticketId,
                                                      TroubleTicketCloseStatusRequest request) {
         if (!TroubleTicketStatus.CLOSED.getValue().equals(request.getStatus())) {
-            throw new TroubleTicketException("VALIDATION_ERROR", WRONG_CLOSED_STATUS_DESC);
+            throw new TroubleTicketException(VALIDATION_ERROR, WRONG_CLOSED_STATUS_DESC);
         }
         
         TroubleTicketEntity ticket = troubleTicketRepository.findByTenantIdAndTicketId(tenantId, ticketId)

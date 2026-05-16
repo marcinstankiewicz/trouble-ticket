@@ -34,6 +34,12 @@ Minimalny, design-first profil TMF621 Trouble Ticket API z dodatkowymi funkcjona
 - **POST /api/v1/troubleTicket/{id}/note** - Dodaj notatkę
     - Tworzy subresource notatki do zgłoszenia
 
+```
+Dev note:
+Nowe funkcjonalności będą rozwijane w kolejnych wersjach API (v2, v3, etc.) zgodnie z TMF621 i potrzebami biznesowymi.
+Znajdzie się w pakiecie rs.v2, rs.v3, etc. z odpowiednimi endpointami i dokumentacją.
+```
+
 
 ## 🔒 Bezpieczeństwo
 
