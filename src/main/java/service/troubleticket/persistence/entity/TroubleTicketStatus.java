@@ -1,0 +1,23 @@
+package service.troubleticket.persistence.entity;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+
+public enum TroubleTicketStatus {
+    NEW("new"),
+    ACKNOWLEDGED("acknowledged"),
+    IN_PROGRESS("inProgress"),
+    RESOLVED("resolved"),
+    CLOSED("closed"),
+    REJECTED("rejected");
+
+    private final String value;
+
+    TroubleTicketStatus(String value) {
+        this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+}
